@@ -1,0 +1,66 @@
+services:
+  app:
+    build:
+      context: .
+      target: development
+    init: true
+    ports:
+      - "${HOST_PORT:-3000}:${PORT-3000}"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      NODE_ENV: "${NODE_ENV-development}"
+      PORT: "${PORT-3000}"
+      DEBUG: "${DEBUG-express-app:server}"
+      DATABASE_URL: "postgresql://express:express@db:5432/express_app"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    volumes:
+      - ./src:/app/src:ro
+      - prisma_client:/app/src/generated/prisma
+      - ./views:/app/views:ro
+      - ./public:/app/public:ro
+      - ./tests:/app/tests:ro
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:' + process.env.PORT + '/users').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+
+  migrate:
+    build:
+      context: .
+      target: development
+    command: ["pnpm", "db:deploy"]
+    environment:
+      DATABASE_URL: "postgresql://express:express@db:5432/express_app"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:17-bookworm
+    environment:
+      POSTGRES_USER: express
+      POSTGRES_PASSWORD: express
+      POSTGRES_DB: express_app
+    ports:
+      - "127.0.0.1:${POSTGRES_HOST_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U express -d express_app"]
+      interval: 2s
+      timeout: 5s
+      retries: 15
+
+volumes:
+  postgres_data:
+  prisma_client:

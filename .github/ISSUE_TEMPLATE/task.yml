@@ -1,0 +1,86 @@
+name: Задача
+description: Небольшая задача с явными критериями готовности.
+title: "[Задача] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Одна задача — один законченный результат, ветка и worktree. До начала назначьте одного реального исполнителя через Assignees.
+        Обязательны API_CONVENTIONS.md и TEAM_WORKFLOW.md; captain первоначально — владелец репозитория.
+        Не вставляйте секреты, токены, содержимое .env и персональные данные.
+  - type: textarea
+    id: ownership
+    attributes:
+      label: Владелец и файловые границы
+      description: Один реальный Issue Assignee, принадлежащий ему модуль и точные файлы. Не придумывайте GitHub handles; укажите фактического назначенного участника.
+      placeholder: |
+        Единственный Assignee: …
+        Модуль и разрешённые файлы (включая schemas.ts, регистрации api.register в router.ts и отдельные тесты): …
+        Чужие/общие файлы, которые не редактируем: …
+        Изолированные Compose project, HTTP/DB-порты: …
+    validations:
+      required: true
+  - type: textarea
+    id: integration
+    attributes:
+      label: Запрос общей интеграции captain
+      description: Напишите «нет» либо перечислите общие изменения и зависимости. Исполнитель не правит центральные файлы одновременно с captain.
+      placeholder: |
+        app/server/database/config/src/http/helpers: файл → требуемый интерфейс или «нет»; для нового API-модуля — включение фабрики в единственный apiModules.
+        Schema/миграции: изменение и задача предварительной интеграции или «нет».
+        Package/lock/build/Docker/CI/общие правила: изменение и согласование или «нет».
+    validations:
+      required: true
+  - type: textarea
+    id: goal
+    attributes:
+      label: Цель
+      description: Какой наблюдаемый результат нужен и кому? Не только список действий.
+      placeholder: "Посетитель получает … при …, чтобы …"
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Границы и не-цели
+      description: Какие файлы/модули затрагиваем? Что явно не меняем? Есть ли зависимости от других задач?
+      placeholder: |
+        В рамках: …
+        Не входит: …
+        Зависимости/согласования с тимлидом: … или «нет».
+    validations:
+      required: true
+  - type: textarea
+    id: contract
+    attributes:
+      label: Контракт API и входов/выходов
+      description: Метод/полный путь /api/<resource>/{id}, параметры/тело, статус, заголовки, ответы и ошибки; пути к schemas.ts и api.register в router.ts модуля. Схемы общие для safeParse и генератора /openapi.json; описания, примеры и статусы ошибок задаются явно. Без API напишите «API не меняется». Общие правила не копируйте из API_CONVENTIONS.md.
+      placeholder: |
+        Вход: …
+        Успешный результат: …
+        Ошибки/граничные случаи: …
+        Изменения env/зависимостей: … или «нет»; одобрение тимлида: …
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Измеримые критерии приёмки
+      description: Каждый пункт должен проверяться наблюдением или тестом. «Работает» недостаточно.
+      placeholder: |
+        - [ ] При … получаем статус … и тело …
+        - [ ] При … существующее поведение … сохраняется.
+    validations:
+      required: true
+  - type: textarea
+    id: verification
+    attributes:
+      label: Как проверить
+      description: Данные, команды, шаги smoke и ожидаемые результаты. После общей интеграции назначенный интегратор обновляет ветку от main, выполняет pnpm verify и реальный smoke; в PR записывает факты. Не запускайте проверки параллельно с чужими правками.
+      placeholder: |
+        Автотесты/граничные случаи, проверка /openapi.json и /docs при изменении API: …
+        pnpm verify — все этапы успешны.
+        Запуск по README: …
+        Smoke: запрос … → статус …, содержимое …
+    validations:
+      required: true

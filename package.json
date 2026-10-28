@@ -1,0 +1,58 @@
+{
+  "name": "express-app",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "pnpm db:generate && node --env-file-if-exists=.env --watch src/server.ts",
+    "build": "pnpm db:generate && tsc",
+    "check": "pnpm db:generate && tsc --noEmit && tsc --project tsconfig.test.json",
+    "format": "oxfmt --write .",
+    "format:check": "oxfmt --check .",
+    "lint": "oxlint --deny-warnings src tests scripts prisma.config.ts vitest.config.ts",
+    "test": "pnpm db:generate && vitest run",
+    "test:watch": "pnpm db:generate && vitest --watch",
+    "verify": "pnpm format:check && pnpm lint && pnpm check && pnpm test && pnpm build",
+    "start": "node --env-file-if-exists=.env dist/server.js",
+    "db": "node --env-file-if-exists=.env node_modules/prisma/build/index.js",
+    "db:generate": "node node_modules/prisma/build/index.js generate",
+    "db:migrate": "pnpm db migrate dev",
+    "db:deploy": "pnpm db migrate deploy",
+    "db:studio": "pnpm db studio",
+    "db:smoke": "node --env-file-if-exists=.env scripts/database-smoke.ts",
+    "api:smoke": "node --env-file-if-exists=.env scripts/notes-smoke.ts"
+  },
+  "dependencies": {
+    "@asteasolutions/zod-to-openapi": "9.1.0",
+    "@prisma/adapter-pg": "7.10.1",
+    "@prisma/client": "7.10.1",
+    "@scalar/express-api-reference": "0.10.31",
+    "cookie-parser": "~1.4.7",
+    "debug": "~4.4.3",
+    "express": "~5.3.0",
+    "http-errors": "~2.0.1",
+    "morgan": "~1.12.1",
+    "pg": "8.16.3",
+    "pug": "~3.0.4",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@types/cookie-parser": "1.4.10",
+    "@types/debug": "4.1.13",
+    "@types/express": "5.0.6",
+    "@types/har-format": "1.2.16",
+    "@types/http-errors": "2.0.5",
+    "@types/morgan": "1.9.10",
+    "@types/node": "24.19.2",
+    "@types/pg": "8.15.6",
+    "oxfmt": "0.74.0",
+    "oxlint": "1.89.0",
+    "prisma": "7.10.1",
+    "typescript": "7.0.2",
+    "vitest": "5.0.5"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "packageManager": "pnpm@12.14.0"
+}
